@@ -191,12 +191,4 @@ Your slide decks (`inbox/`), your built notebooks (`content/`), the generated
 ISA (in-semester assessment) prep is built: 1-mark MCQ, 2-mark MCQ, 4-mark theory, flashcards.
 ESA (end-semester) support is not built yet.
 
-## Troubleshooting
 
-| symptom | fix |
-|---|---|
-| math shows as raw `$...$`, diagrams as code | run `bun run setup` |
-| `ccnotes: command not found` | add the alias to `~/.zshrc` and open a new terminal |
-| a notebook doesn't appear | it only shows once `ccnotes-assemble` sets its status to `ready`; check `ccnotes validate` |
-| the `ccnotes-build` skill isn't found | run Claude Code from inside this repo |
-| ECC plugin hooks interrupt the build | this repo ships `.claude/settings.json` with `ECC_GATEGUARD=off` and ECC hooks disabled |
