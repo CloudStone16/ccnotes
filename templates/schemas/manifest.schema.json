@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ccnotes manifest",
+  "type": "object",
+  "required": ["id", "alias", "subject", "subjectSlug", "unitNo", "title", "summary", "builtAt", "sourceDecks", "sections", "slideCoverage", "counts"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^ccnotes_[a-z0-9]{6}$" },
+    "alias": { "type": "string", "pattern": "^[a-z0-9-]+-u[0-9]+$" },
+    "subject": { "type": "string", "minLength": 1 },
+    "subjectSlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "unitNo": { "type": "integer", "minimum": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "builtAt": { "type": "string", "format": "date-time" },
+    "sourceDecks": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["slug", "file", "kind", "slides"],
+        "additionalProperties": false,
+        "properties": {
+          "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "file": { "type": "string", "minLength": 1 },
+          "kind": { "enum": ["pptx", "pdf", "gslides"] },
+          "slides": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "sections": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["n", "slug", "title", "file", "deckSlug", "topics"],
+        "additionalProperties": false,
+        "properties": {
+          "n": { "type": "integer", "minimum": 1 },
+          "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "title": { "type": "string", "minLength": 1 },
+          "file": { "type": "string", "pattern": "^sections/[0-9]{2}-[a-z0-9-]+\\.html$" },
+          "deckSlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "topics": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "slideCoverage": {
+      "type": "object",
+      "required": ["total", "covered"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 1 },
+        "covered": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": ["sectionMcqs", "flashcards", "mcq1", "mcq2", "theory4", "viz"],
+      "additionalProperties": false,
+      "properties": {
+        "sectionMcqs": { "type": "integer", "minimum": 0 },
+        "flashcards": { "type": "integer", "minimum": 0 },
+        "mcq1": { "type": "integer", "minimum": 0 },
+        "mcq2": { "type": "integer", "minimum": 0 },
+        "theory4": { "type": "integer", "minimum": 0 },
+        "viz": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

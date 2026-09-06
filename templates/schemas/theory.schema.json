@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ccnotes theory (4-mark ISA)",
+  "type": "object",
+  "required": ["questions"],
+  "additionalProperties": false,
+  "properties": {
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "marks", "section", "prompt", "modelAnswer", "markingScheme"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "marks": { "type": "integer", "enum": [4] },
+          "section": { "type": "integer", "minimum": 1 },
+          "prompt": { "type": "string", "minLength": 1 },
+          "modelAnswer": { "type": "string", "minLength": 1 },
+          "markingScheme": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "sourceSlides": { "type": "array", "items": { "type": "integer", "minimum": 1 } }
+        }
+      }
+    }
+  }
+}

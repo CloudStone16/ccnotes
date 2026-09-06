@@ -1,0 +1,18 @@
+{
+  "name": "ccnotes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local interactive study-notes platform. Claude Code agents build dark-mode interactive HTML notes from slide decks; this server browses them.",
+  "scripts": {
+    "start": "bun server.mjs",
+    "setup": "bun scripts/setup-vendor.mjs",
+    "scan": "bun tools/scan.mjs --print",
+    "validate": "bun tools/validate-all.mjs",
+    "new": "bun tools/new-notebook.mjs",
+    "delete": "bun tools/delete-notebook.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

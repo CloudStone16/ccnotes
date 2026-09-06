@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-ccnotes-isa>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISA prep &mdash; {{TITLE}}</title>
+<link rel="stylesheet" href="/note-kit/note-kit.css">
+</head>
+<body>
+<article class="note">
+  <header class="note-head">
+    <p class="crumb">{{SUBJECT}} &nbsp;/&nbsp; Unit {{UNIT_NO}}</p>
+    <h1>ISA preparation</h1>
+    <p class="lede">Everything you need to rehearse for the in-semester assessment on {{TITLE}}.</p>
+  </header>
+
+  <main class="prose">
+    <div data-tabs>
+      <section data-tab="Flashcards">
+        <p class="lede">Rapid recall. Shuffle, flip, mark known. Clear the deck = ready.</p>
+        <div data-flashcards data-flashcards-src="../data/flashcards.json"></div>
+      </section>
+      <section data-tab="1-mark MCQ">
+        <p class="lede">Single-fact recognition. Aim for 100%.</p>
+        <div data-quiz data-quiz-src="../data/mcqs.json" data-quiz-pool="isa.mark1"></div>
+      </section>
+      <section data-tab="2-mark MCQ">
+        <p class="lede">Multi-step / applied reasoning. Read the explanation for every miss.</p>
+        <div data-quiz data-quiz-src="../data/mcqs.json" data-quiz-pool="isa.mark2"></div>
+      </section>
+      <section data-tab="4-mark theory">
+        <p class="lede">Write a full answer, then open the model answer and marking scheme.</p>
+        <div data-theory data-theory-src="../data/theory.json"></div>
+      </section>
+    </div>
+  </main>
+</article>
+<script src="/note-kit/note-kit.js"></script>
+</body>
+</html>

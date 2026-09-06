@@ -1,0 +1,25 @@
+# --- dependencies / vendored assets (fetched by `bun run setup`) ---
+node_modules/
+viewer/note-kit/vendor/*
+!viewer/note-kit/vendor/.gitkeep
+
+# --- OS / editor cruft ---
+.DS_Store
+**/.DS_Store
+*.log
+
+# --- your source slide decks (never published) ---
+/inbox/*
+!/inbox/.gitkeep
+
+# --- generated study-notes content (personal; rebuilt from your decks) ---
+/content/*
+!/content/.gitkeep
+
+# --- generated per-notebook doubt-clarifier skills (rebuilt by ccnotes-build) ---
+/.claude/skills/ccnotes-doubt-*/
+
+# --- local machine state ---
+/.claude/settings.local.json
+/.claude/scheduled_tasks.lock
+/tmp/

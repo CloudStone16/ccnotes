@@ -1,0 +1,12 @@
+{
+  "env": {
+    "ECC_GATEGUARD": "off"
+  },
+  "pluginConfigs": {
+    "ecc@ecc": {
+      "options": {
+        "hooks_enabled": false
+      }
+    }
+  }
+}

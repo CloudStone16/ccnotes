@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ccnotes</title>
+<link rel="stylesheet" href="/note-kit/note-kit.css">
+<link rel="stylesheet" href="/assets/shell.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="side-head">
+      <span class="brand">ccnotes</span>
+      <button id="healthBtn" class="icon-btn" title="Library health">◍</button>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search topics, terms, questions…  ( / )" autocomplete="off">
+      <div id="results" hidden></div>
+    </div>
+    <nav id="tree" aria-label="Notebooks"></nav>
+    <div class="side-foot">
+      <span id="stat"></span>
+    </div>
+  </aside>
+  <main id="main">
+    <div id="welcome">
+      <h1>ccnotes</h1>
+      <p>Interactive study notes, built by Claude Code from your slide decks.</p>
+      <p class="muted">Pick a subject on the left, or press <kbd>/</kbd> to search.
+         Add a unit with <code>bun tools/new-notebook.mjs "&lt;Subject&gt;" &lt;unit&gt; "&lt;Title&gt;"</code>
+         then run the <code>ccnotes-build</code> skill on its decks.</p>
+      <div id="emptyState" hidden><p class="muted">No notebooks yet.</p></div>
+    </div>
+    <iframe id="viewer" title="Note viewer" hidden></iframe>
+  </main>
+</div>
+<script src="/assets/shell.js"></script>
+</body>
+</html>

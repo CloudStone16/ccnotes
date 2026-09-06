@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" data-ccnotes-unit>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} &mdash; Unit {{UNIT_NO}}</title>
+<link rel="stylesheet" href="/note-kit/note-kit.css">
+</head>
+<body>
+<article class="note unit-landing">
+  <header class="note-head">
+    <p class="crumb">{{SUBJECT}}</p>
+    <h1>Unit {{UNIT_NO}} &mdash; {{TITLE}}</h1>
+    <p class="lede">{{SUMMARY}}</p>
+  </header>
+
+  <main class="prose">
+    <h2>Sections</h2>
+    <ol class="toc">
+      <!-- {{SECTIONS: <li><a href="sections/NN-slug.html">Title</a><span class="toc-topics">topics</span></li> }} -->
+    </ol>
+
+    <h2>Revision &amp; testing</h2>
+    <ul class="toc">
+      <li><a href="isa/index.html">ISA prep &mdash; flashcards, 1-mark, 2-mark, 4-mark theory</a></li>
+      <li><a href="#quickref">Quick reference sheet</a></li>
+      <li><a href="#formulas">Formula sheet</a></li>
+      <li><a href="#flashcards">Flashcards (full deck)</a></li>
+    </ul>
+
+    <section id="quickref"><h2>Quick reference</h2><div data-quickref-src="data/quickref.json"></div></section>
+    <section id="formulas"><h2>Formula sheet</h2><div data-formulas-src="data/formulas.json"></div></section>
+    <section id="flashcards">
+      <h2>Flashcards</h2>
+      <p class="lede">If you can answer every card, you are thorough with this unit.</p>
+      <div data-flashcards data-flashcards-src="data/flashcards.json"></div>
+    </section>
+  </main>
+</article>
+<script src="/note-kit/note-kit.js"></script>
+</body>
+</html>

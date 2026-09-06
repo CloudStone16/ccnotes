@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-ccnotes-section>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{SECTION_TITLE}}</title>
+<link rel="stylesheet" href="/note-kit/note-kit.css">
+</head>
+<body>
+<article class="note">
+
+  <header class="note-head">
+    <p class="crumb">{{SUBJECT}} &nbsp;/&nbsp; Unit {{UNIT_NO}}</p>
+    <h1>{{SECTION_TITLE}}</h1>
+    <p class="lede">{{ONE_LINE_SUMMARY}}</p>
+  </header>
+
+  <main class="prose">
+    <!--
+      FILL THIS with the enhanced content (NOTES_SPEC section 3 & 5).
+      Allowed building blocks:
+        <h2>/<h3> headings
+        <p>, <ul>, <ol>, <table>
+        <div data-callout="note|key|warn|example">...</div>
+        <div data-reveal="Title">hidden detail / hint / "Gap in source"</div>
+        <div data-tabs>  <section data-tab="Label">...</section>  ... </div>
+        <div data-steps> <section data-step="Label">...</section> ... </div>
+        math:  \( inline \)   and   $$ block $$
+        diagram: <pre class="mermaid">graph LR; A--&gt;B</pre>
+        verified viz: <figure><iframe class="viz" src="../assets/viz/NAME.html" title="..."></iframe>
+                      <figcaption>...</figcaption></figure>
+        quick chart: <canvas data-chart='{"type":"bar","labels":[...],"series":[...]}'></canvas>
+    -->
+    <h2>Replace me</h2>
+    <p>Replace me.</p>
+  </main>
+
+  <section class="section-check" data-section-check>
+    <h2>Check your understanding</h2>
+    <div data-mcq></div>
+    <script type="application/json" data-mcq-src>
+    {
+      "questions": [
+        {
+          "stem": "REPLACE — a question testing understanding, not slide recall.",
+          "options": ["A", "B", "C", "D"],
+          "answer": 0,
+          "explanation": "Why A is right and the others are not."
+        }
+      ]
+    }
+    </script>
+  </section>
+
+  <details class="slide-mapping" data-slide-mapping>
+    <summary>Slide mapping (source traceability)</summary>
+    <ul>
+      <li>Slides 1&ndash;3 &rarr; &ldquo;Replace me&rdquo;</li>
+    </ul>
+  </details>
+
+</article>
+<script src="/note-kit/note-kit.js"></script>
+</body>
+</html>
