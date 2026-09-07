@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local interactive study-notes platform. Claude Code agents build dark-mode interactive HTML notes from slide decks; this server browses them.",
+  "description": "Local interactive study-notes platform. Claude Code and Antigravity / Gemini agents build dark-mode interactive HTML notes from slide decks; this server browses them.",
   "scripts": {
-    "start": "bun server.mjs",
-    "setup": "bun scripts/setup-vendor.mjs",
-    "scan": "bun tools/scan.mjs --print",
-    "validate": "bun tools/validate-all.mjs",
-    "new": "bun tools/new-notebook.mjs",
-    "delete": "bun tools/delete-notebook.mjs"
+    "start": "node server.mjs",
+    "setup": "node scripts/setup-vendor.mjs",
+    "scan": "node tools/scan.mjs --print",
+    "validate": "node tools/validate-all.mjs",
+    "new": "node tools/new-notebook.mjs",
+    "delete": "node tools/delete-notebook.mjs",
+    "sync-skills": "node tools/sync-skills.mjs"
   },
   "engines": {
     "node": ">=20"

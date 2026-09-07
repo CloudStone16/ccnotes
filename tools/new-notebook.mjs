@@ -48,7 +48,7 @@ const inboxDir = path.join(ROOT, inboxRel);
 fs.mkdirSync(inboxDir, { recursive: true });
 fs.writeFileSync(path.join(inboxDir, "PUT-DECKS-HERE.txt"),
   `Drop this unit's slide decks in this folder (.zip / .pptx / .pdf / exported Google Slides),\n` +
-  `then in Claude Code (run from the repo root): run ccnotes-build for notebook ${id} from ${inboxRel}\n` +
+  `then in Claude Code or Antigravity / Gemini (run from repo root): run ccnotes-build for notebook ${id} from ${inboxRel}\n` +
   `This file is ignored by the build.\n`);
 
 reg.notebooks.push({ id, alias, subject, subjectSlug, unitNo, title, path: rel, status: "draft", createdAt: new Date().toISOString() });

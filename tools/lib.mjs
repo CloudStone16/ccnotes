@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 export const CONTENT = path.join(ROOT, "content");
-export const SKILLS = path.join(ROOT, ".claude", "skills");
+export const CLAUDE_SKILLS = path.join(ROOT, ".claude", "skills");
+export const GEMINI_SKILLS = path.join(ROOT, ".agents", "skills");
+export const SKILL_DIRS = [CLAUDE_SKILLS, GEMINI_SKILLS];
+export const SKILLS = CLAUDE_SKILLS;
 export const REGISTRY = path.join(CONTENT, "registry.json");
 
 export function slugify(s) {

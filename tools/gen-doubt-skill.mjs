@@ -1,7 +1,7 @@
 /* Generate (or refresh) the per-notebook doubt-clarifier skill from its digest. */
 import fs from "node:fs";
 import path from "node:path";
-import { CONTENT, SKILLS, readJson, loadRegistry } from "./lib.mjs";
+import { ROOT, CONTENT, SKILL_DIRS, readJson, loadRegistry } from "./lib.mjs";
 
 const target = process.argv[2];
 if (!target) { console.error("usage: bun tools/gen-doubt-skill.mjs <id|alias>"); process.exit(2); }
@@ -18,9 +18,6 @@ const digest = fs.readFileSync(digestPath, "utf8");
 
 const topics = [...new Set((m.sections || []).flatMap((s) => s.topics || []))];
 const skillName = `ccnotes-doubt-${m.id}`;
-const skillDir = path.join(SKILLS, skillName);
-fs.mkdirSync(skillDir, { recursive: true });
-fs.copyFileSync(digestPath, path.join(skillDir, "SOURCE.md"));
 
 const desc = `Doubt clarifier for notebook ${m.id} (${m.alias}) — ${m.subject} Unit ${m.unitNo}: ${m.title}. ` +
   `Load when the user gives notebook id ${m.id} / alias ${m.alias}, or asks doubts about: ${topics.slice(0, 12).join(", ")}.`;
@@ -36,7 +33,7 @@ You are now the tutor for **notebook ${m.id}** (${m.alias}). Everything you need
 skill folder and the notebook folder.
 
 ## Sources (read as needed, do not guess)
-- \`.claude/skills/${skillName}/SOURCE.md\` — the unit digest (glossary, per-section summaries,
+- \`SOURCE.md\` in this skill folder (or \`.agents/skills/${skillName}/SOURCE.md\` / \`.claude/skills/${skillName}/SOURCE.md\`) — the unit digest (glossary, per-section summaries,
   formulas, common misconceptions, file map). Read this first.
 - \`content/${nb.path}/sections/*.html\` — full enhanced notes. Open the section the file map points to.
 - \`content/${nb.path}/data/flashcards.json\`, \`data/mcqs.json\`, \`data/theory.json\` — practice items.
@@ -54,5 +51,11 @@ Skim SOURCE.md → identify which section(s) the doubt touches → open those se
 answer with citations → offer a practice question.
 `;
 
-fs.writeFileSync(path.join(skillDir, "SKILL.md"), body);
-console.log(`wrote .claude/skills/${skillName}/SKILL.md  (+ SOURCE.md)`);
+for (const baseDir of SKILL_DIRS) {
+  const skillDir = path.join(baseDir, skillName);
+  fs.mkdirSync(skillDir, { recursive: true });
+  fs.copyFileSync(digestPath, path.join(skillDir, "SOURCE.md"));
+  fs.writeFileSync(path.join(skillDir, "SKILL.md"), body);
+  const rel = path.relative(ROOT, path.join(skillDir, "SKILL.md")).replace(/\\/g, "/");
+  console.log(`wrote ${rel}  (+ SOURCE.md)`);
+}

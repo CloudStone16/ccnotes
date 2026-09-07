@@ -1,6 +1,6 @@
 # NOTES_SPEC — canonical contract for ccnotes notebooks
 
-Every skill in `.claude/skills/ccnotes-*` MUST read this file before doing work, and MUST
+Every skill in `.agents/skills/ccnotes-*` and `.claude/skills/ccnotes-*` MUST read this file before doing work, and MUST
 follow it exactly. `tools/validate-notebook.mjs` enforces the machine-checkable parts. If this
 file and a skill disagree, this file wins — fix the skill.
 
@@ -232,7 +232,7 @@ deck's content**, and cite `section N` / `slide M` for every claim.
   skeleton, adds a `content/registry.json` entry with `status: "draft"`.
 - `ccnotes-assemble` flips `status` to `"ready"` only after `validate-notebook.mjs` passes.
 - `tools/delete-notebook.mjs <id|alias>` removes the folder, the
-  `.claude/skills/ccnotes-doubt-<id>/` skill, and the registry entry.
+  generated doubt skills (`.agents/skills/ccnotes-doubt-<id>/` and `.claude/skills/ccnotes-doubt-<id>/`), and the registry entry.
 
 ---
 
