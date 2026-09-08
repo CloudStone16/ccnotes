@@ -1,4 +1,4 @@
-# --- dependencies / vendored assets (fetched by `bun run setup`) ---
+# --- dependencies / vendored assets (fetched by `npm run setup`) ---
 node_modules/
 viewer/note-kit/vendor/*
 !viewer/note-kit/vendor/.gitkeep
@@ -18,7 +18,10 @@ viewer/note-kit/vendor/*
 
 # --- generated per-notebook doubt-clarifier skills (rebuilt by ccnotes-build) ---
 /.claude/skills/ccnotes-doubt-*/
-/.agents/skills/ccnotes-doubt-*/
+
+# --- .agents/skills/ is generated from .claude/skills/ by `npm run setup`
+#     (mirror for Antigravity); never edit or commit it — edit .claude/skills/ ---
+/.agents/skills/
 
 # --- local machine state ---
 /.claude/settings.local.json

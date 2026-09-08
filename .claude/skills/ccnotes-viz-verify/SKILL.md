@@ -8,10 +8,11 @@ description: Verify every visualization in a ccnotes notebook by loading it in a
 Read `NOTES_SPEC.md` section 6.
 
 ## Setup
-Ensure the server runs (`bun run start`, port 4319). Each viz is reachable at
+Ensure the server runs (`node server.mjs`, port 4319). Each viz is reachable at
 `http://localhost:4319/content/<subjectSlug>/<id>/assets/viz/<name>.html`.
-Use the Claude Browser tools (`mcp__Claude_Browser__*`): navigate, screenshot,
-`read_console_messages`, `read_page`, and `computer` to exercise controls.
+Use whatever browser-automation tools your agent has (Claude Code: `mcp__Claude_Browser__*`;
+Antigravity: its browser subagent) to navigate, screenshot, read console messages, read the
+DOM, and exercise controls.
 
 ## Per-file checks
 | check | pass condition |

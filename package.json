@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local interactive study-notes platform. Claude Code and Antigravity / Gemini agents build dark-mode interactive HTML notes from slide decks; this server browses them.",
+  "description": "Local interactive study-notes platform. Coding agents (Claude Code, Antigravity) build dark-mode interactive HTML notes from slide decks; this server browses them.",
   "scripts": {
     "start": "node server.mjs",
-    "setup": "node scripts/setup-vendor.mjs",
+    "setup": "node scripts/setup-vendor.mjs && node tools/sync-skills.mjs",
     "scan": "node tools/scan.mjs --print",
     "validate": "node tools/validate-all.mjs",
     "new": "node tools/new-notebook.mjs",

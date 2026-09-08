@@ -6,7 +6,7 @@ import { ROOT, CONTENT, slugify, loadRegistry, saveRegistry } from "./lib.mjs";
 
 const [, , subject, unitRaw, title] = process.argv;
 if (!subject || !unitRaw || !title) {
-  console.error('usage: bun tools/new-notebook.mjs "<Subject>" <unitNo> "<Title>"');
+  console.error('usage: node tools/new-notebook.mjs "<Subject>" <unitNo> "<Title>"');
   process.exit(2);
 }
 const unitNo = parseInt(unitRaw, 10);
@@ -48,7 +48,7 @@ const inboxDir = path.join(ROOT, inboxRel);
 fs.mkdirSync(inboxDir, { recursive: true });
 fs.writeFileSync(path.join(inboxDir, "PUT-DECKS-HERE.txt"),
   `Drop this unit's slide decks in this folder (.zip / .pptx / .pdf / exported Google Slides),\n` +
-  `then in Claude Code or Antigravity / Gemini (run from repo root): run ccnotes-build for notebook ${id} from ${inboxRel}\n` +
+  `then, with your coding agent running from the repo root: run ccnotes-build for notebook ${id} from ${inboxRel}\n` +
   `This file is ignored by the build.\n`);
 
 reg.notebooks.push({ id, alias, subject, subjectSlug, unitNo, title, path: rel, status: "draft", createdAt: new Date().toISOString() });

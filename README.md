@@ -1,17 +1,17 @@
 # ccnotes
 
-**A local platform for interactive, exam-focused study notes that Claude Code and Google Antigravity / Gemini build from your slide decks.**
+**A local platform for interactive, exam-focused study notes that coding agents build from your slide decks.**
 
-You give it a unit's slide decks. AI agents (Claude Code or Google Antigravity / Gemini) read every slide, one deck at a time, and
-produce a single interactive notebook for that unit: enhanced notes (everything in the slides,
+You give it a unit's slide decks. A coding agent (Claude Code or Google Antigravity) reads every slide, one deck at a time, and
+produces a single interactive notebook for that unit: enhanced notes (everything in the slides,
 made clearer — nothing invented), per-section MCQ checks, a flashcard deck, a quick-reference
 sheet, a formula sheet, and an ISA-prep pack (1-mark MCQs, 2-mark MCQs, 4-mark theory with
 model answers). A small zero-dependency server lets you browse it all — subject → unit →
 section — search everything, and jump straight to an answer.
 
-Every notebook also gets its own auto-generated **doubt-clarifier skill** (in `.agents/skills/` and `.claude/skills/`), so a fresh
-AI session can be handed the notebook id and instantly has full context to tutor you on that
-unit.
+Every notebook also gets its own auto-generated **doubt-clarifier skill** (in `.claude/skills/`,
+mirrored to `.agents/skills/`), so a fresh agent session can be handed the notebook id and
+instantly has full context to tutor you on that unit.
 
 Everything renders **offline** in **dark mode**, tuned to be readable and non-distracting.
 
@@ -20,16 +20,18 @@ Everything renders **offline** in **dark mode**, tuned to be readable and non-di
 ## Requirements
 
 - [**Node.js**](https://nodejs.org) (>= 20) or [**Bun**](https://bun.sh) — zero external npm dependencies.
-- [**Google Antigravity**](https://antigravity.google) / **Gemini** or [**Claude Code**](https://claude.com/claude-code) — to run the note-building skills.
-- A POSIX shell or PowerShell (`unzip`, `curl`).
+- [**Claude Code**](https://claude.com/claude-code) or [**Google Antigravity**](https://antigravity.google) — to run the note-building skills. Any agent that reads `AGENTS.md` (Codex, Gemini CLI, Cursor) can drive the same pipeline by running the tool commands directly.
+- A POSIX shell with `unzip` and `curl` (standard on macOS/Linux).
 
 ## Install
 
 ```bash
 git clone git@github.com:CloudStone16/ccnotes.git
 cd ccnotes
-bun run setup        # one-time: downloads KaTeX + mermaid into viewer/note-kit/vendor/ for offline math + diagrams
+npm run setup        # one-time: downloads KaTeX + mermaid for offline math + diagrams, and mirrors .claude/skills/ → .agents/skills/ for Antigravity
 ```
+
+(`bun run setup` works too.)
 
 Optional — add the `ccnotes` command to your shell (`~/.zshrc`):
 
@@ -51,7 +53,7 @@ ccnotes logs         # tail -f the server log
 ccnotes open         # open the browser
 ```
 
-Without the alias: `bun run start` (foreground) or `bun server.mjs`.
+Without the alias: `npm start` (foreground) or `node server.mjs`.
 
 **In the browser:**
 
@@ -69,11 +71,13 @@ risk to the shell.
 
 ## Make notes for a unit
 
-The `ccnotes-*` skills are **project-local** in `.agents/skills/` (for Google Antigravity / Gemini) and `.claude/skills/` (for Claude Code), so **run your AI agent from this repo root**.
+The `ccnotes-*` skills are **project-local**: `.claude/skills/` (Claude Code, the source of
+truth) and its generated mirror `.agents/skills/` (Antigravity). So **run your agent from this
+repo root**.
 
 1. **Open the repo in your agent**
-   - **Google Antigravity**: Open the repo folder in Antigravity IDE or run `agy` in your terminal.
-   - **Claude Code**: Open the repo folder in Claude desktop or run `claude` in your terminal.
+   - **Claude Code**: open the repo folder in Claude desktop, or run `claude` in your terminal.
+   - **Google Antigravity**: open the repo folder in Antigravity (run `npm run setup` first if `.agents/skills/` is missing).
 
 2. **Scaffold the unit** (once per unit):
 
@@ -93,7 +97,7 @@ The `ccnotes-*` skills are **project-local** in `.agents/skills/` (for Google An
    > run ccnotes-build for notebook `ccnotes_xxxxxx` from `inbox/operating-systems/unit-3`
 
 5. When it finishes: **refresh the server**. The notebook is live, and a
-   `ccnotes-doubt-<id>` skill now exists in both `.agents/skills/` and `.claude/skills/`.
+   `ccnotes-doubt-<id>` skill now exists in `.claude/skills/` and `.agents/skills/`.
 
 Repeat 2–5 for each unit. Same subject, different unit = just another `ccnotes new`.
 
@@ -165,8 +169,8 @@ viewer/
   index.html shell.*     the browsing shell (nav tree, search, keyboard)
   note-kit/              shared interactive layer injected into every note
     note-kit.js  .css     MCQ / quiz / flashcards / theory / tabs / steps / reveal / math / mermaid / charts
-    vendor/               KaTeX + mermaid (git-ignored; run setup script)
-GEMINI.md                Antigravity / Gemini instructions and invariants
+    vendor/               KaTeX + mermaid (git-ignored; run `npm run setup`)
+AGENTS.md                shared agent rules (Claude Code, Antigravity, Codex)
 NOTES_SPEC.md            the contract every build skill obeys
 templates/
   section.html unit-index.html isa-index.html
@@ -177,8 +181,8 @@ tools/
   validate-notebook.mjs   enforces every NOTES_SPEC §11 invariant
   validate-all.mjs
   new-notebook.mjs delete-notebook.mjs gen-doubt-skill.mjs sync-skills.mjs
-.agents/skills/ccnotes-* Antigravity / Gemini build pipeline skills
-.claude/skills/ccnotes-* Claude Code build pipeline skills
+.claude/skills/ccnotes-* build pipeline skills (source of truth, in git)
+.agents/skills/          generated mirror of the above for Antigravity (git-ignored)
 content/                  built notebooks (git-ignored — your notes)
 inbox/                    your source slide decks (git-ignored)
 ```
@@ -186,8 +190,9 @@ inbox/                    your source slide decks (git-ignored)
 ## What is not in git
 
 Your slide decks (`inbox/`), your built notebooks (`content/`), the generated
-`ccnotes-doubt-*` skills, and the vendored KaTeX/mermaid assets. Clone the repo, run
-`bun run setup`, and build your own notebooks from your own decks.
+`ccnotes-doubt-*` skills, the generated `.agents/skills/` mirror, and the vendored
+KaTeX/mermaid assets. Clone the repo, run `npm run setup`, and build your own notebooks
+from your own decks.
 
 ## Scope
 

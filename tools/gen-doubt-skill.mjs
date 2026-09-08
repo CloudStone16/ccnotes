@@ -4,7 +4,7 @@ import path from "node:path";
 import { ROOT, CONTENT, SKILL_DIRS, readJson, loadRegistry } from "./lib.mjs";
 
 const target = process.argv[2];
-if (!target) { console.error("usage: bun tools/gen-doubt-skill.mjs <id|alias>"); process.exit(2); }
+if (!target) { console.error("usage: node tools/gen-doubt-skill.mjs <id|alias>"); process.exit(2); }
 
 const reg = loadRegistry();
 const nb = reg.notebooks.find((n) => n.id === target || n.alias === target);

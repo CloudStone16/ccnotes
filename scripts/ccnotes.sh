@@ -8,7 +8,7 @@ CCNOTES_PORT="${CCNOTES_PORT:-4319}"
 PIDFILE="/tmp/ccnotes.pid"
 LOGFILE="/tmp/ccnotes.log"
 URL="http://localhost:${CCNOTES_PORT}"
-JS_RUNNER="${JS_RUNNER:-$(command -v bun 2>/dev/null || command -v node 2>/dev/null || echo node)}"
+JS_RUNNER="${JS_RUNNER:-$(command -v node 2>/dev/null || command -v bun 2>/dev/null || echo node)}"
 
 _running() { [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; }
 
@@ -54,10 +54,10 @@ ccnotes <command>
   help           this text
 
 To build notes for a unit:
-  1. cd $CCNOTES_DIR   (run Antigravity / Gemini or Claude Code here)
+  1. cd $CCNOTES_DIR   (run Claude Code or Antigravity here)
   2. ccnotes new "Operating Systems" 4 "Virtual Memory"
   3. drop the unit's decks (.zip/.pptx/.pdf) in the inbox path it prints
-  4. in your AI agent: run the ccnotes-build skill on that notebook + inbox folder
+  4. in your agent: run the ccnotes-build skill on that notebook + inbox folder
 EOF
 }
 

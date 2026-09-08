@@ -27,9 +27,9 @@ Inputs (all already produced): `sections/*.html`, `data/*.json`, `assets/viz/*` 
    `## Formula list` headings (validator checks).
 5. **Sync section checks** — ensure each section file's `data-section-check` JSON matches
    `data/mcqs.json` `sectionChecks` for that section.
-6. **Validate**: `bun tools/validate-notebook.mjs <id>`. Paste the output into your report.
+6. **Validate**: `node tools/validate-notebook.mjs <id>`. Paste the output into your report.
 7. **Register**: only if validation passed, set the registry entry `status` to `"ready"`
-   (`bun -e` a small update, or edit `content/registry.json` and bump `updatedAt`).
+   (`node -e` a small update, or edit `content/registry.json` and bump `updatedAt`).
    If it failed: DO NOT register. Return the precise error list to ccnotes-build.
 
 ## Report
