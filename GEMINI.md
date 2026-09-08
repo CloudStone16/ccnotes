@@ -21,6 +21,10 @@ All skills and agents operating in this workspace **must** adhere strictly to `N
    - Designed for readability and focus with dark backgrounds (`#0a0b0e` / `#0e0f13`).
 5. **Runtime**:
    - Zero external npm dependencies. Runs on Node.js (>=20) or Bun.
+6. **Flawless Math & Zero-Scrollbars Contract**:
+   - **No ASCII / programmer math**: Every formula, symbol, Greek character (\(\theta, \sigma, \eta, \alpha_i, \mathbf{w}, \xi_i\)), and equation across sections, worked examples, MCQ stems, options, explanations, flashcards, and quick-reference points **must** use LaTeX delimiters (`\( ... \)` inline, `$$ ... $$` block). Never output unformatted code strings like `delta_j = a_j * (1 - a_j) * sum_k ...` or `w <- w + eta*...`.
+   - **Equation wrapping & alignment**: Multi-step derivations and equality chains **must** be broken into aligned lines using `\begin{aligned} ... \end{aligned}` so equations never cause horizontal scrollbars or overflow cards.
+   - **Zero visible scrollbars**: Containers expand fluidly (`--maxw: min(94vw, 1080px)`). Hide scrollbars globally (`scrollbar-width: none !important; ::-webkit-scrollbar { display: none !important; }`). Interactive iframes must use `overflow: hidden;` and responsive auto-resizing.
 
 ---
 

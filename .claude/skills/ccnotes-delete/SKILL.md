@@ -8,12 +8,12 @@ description: Permanently delete a ccnotes notebook and everything tied to it —
 1. Identify the notebook: take an `id` or `alias`; confirm against `content/registry.json`
    (show the user its subject, unit, title).
 2. **Confirm with the user explicitly** — this is irreversible and deletes the notes, the
-   generated tutoring skill, and the catalog entry. Quote exactly what will be removed:
+   generated tutoring skills, and the catalog entry. Quote exactly what will be removed:
    - `content/<path>/` (all sections, data, visualizations)
-   - `.claude/skills/ccnotes-doubt-<id>/`
+   - `.agents/skills/ccnotes-doubt-<id>/` and `.claude/skills/ccnotes-doubt-<id>/`
    - the `content/registry.json` entry
-3. On a clear yes: `bun tools/delete-notebook.mjs <id> --yes`.
+3. On a clear yes: `node tools/delete-notebook.mjs <id> --yes` (or bun).
 4. Tell the user to refresh / restart the server so the catalog updates. Confirm the skill
-   folder is gone (`ls .claude/skills | grep <id>` -> nothing).
+   folders are gone.
 
 Never delete without step 2. If the user names a unit ambiguously, list matches and ask.

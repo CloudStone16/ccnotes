@@ -45,11 +45,15 @@
   })();
 
   /* ---------- math ---------- */
+  var MATH_SPLIT_RE = /(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|(?:\$(?!\s)[^$\n]+?(?<!\s)\$))/;
+  var MATH_TEST_RE = /\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|(?:\$(?!\s)[^$\n]+?(?<!\s)\$)/;
+
   async function renderMath(root) {
+    if (!root) return;
     var v = await vendorReady;
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
-        if (!n.nodeValue || !/\$\$[\s\S]+?\$\$|\\\([\s\S]+?\\\)/.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+        if (!n.nodeValue || !MATH_TEST_RE.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
         var p = n.parentNode; if (!p) return NodeFilter.FILTER_REJECT;
         if (/^(SCRIPT|STYLE|CODE|PRE|TEXTAREA)$/.test(p.nodeName)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
@@ -58,25 +62,46 @@
     var nodes = [], n;
     while ((n = walker.nextNode())) nodes.push(n);
     nodes.forEach(function (node) {
-      var parts = node.nodeValue.split(/(\$\$[\s\S]+?\$\$|\\\([\s\S]+?\\\))/);
+      var parts = node.nodeValue.split(MATH_SPLIT_RE);
       if (parts.length < 2) return;
       var frag = document.createDocumentFragment();
       parts.forEach(function (part) {
-        var block = /^\$\$[\s\S]+\$\$$/.test(part);
-        var inline = /^\\\([\s\S]+\\\)$/.test(part);
-        if (!block && !inline) { if (part) frag.appendChild(document.createTextNode(part)); return; }
-        var tex = block ? part.slice(2, -2) : part.slice(2, -2);
+        if (!part) return;
+        var isDoubleDollar = /^\$\$[\s\S]+\$\$$/.test(part);
+        var isBracketBlock = /^\\\[[\s\S]+\\\]$/.test(part);
+        var isParenInline = /^\\\([\s\S]+\\\)$/.test(part);
+        var isSingleDollar = /^\$(?!\s)[^$\n]+(?<!\s)\$$/.test(part);
+
+        var block = isDoubleDollar || isBracketBlock;
+        var inline = isParenInline || isSingleDollar;
+
+        if (!block && !inline) {
+          frag.appendChild(document.createTextNode(part));
+          return;
+        }
+
+        var tex = "";
+        if (isDoubleDollar || isBracketBlock || isParenInline) {
+          tex = part.slice(2, -2).trim();
+        } else if (isSingleDollar) {
+          tex = part.slice(1, -1).trim();
+        }
+
         var span = document.createElement(block ? "div" : "span");
         if (block) span.className = "nk-math-block";
         if (v.katex && window.katex) {
-          try { window.katex.render(tex, span, { displayMode: block, throwOnError: false }); }
-          catch (e) { span.textContent = (block ? "$$" : "\\(") + tex + (block ? "$$" : "\\)"); }
+          try {
+            window.katex.render(tex, span, { displayMode: block, throwOnError: false });
+          } catch (e) {
+            span.textContent = part;
+          }
         } else {
-          span.className += " nk-math-raw"; span.textContent = tex;
+          span.className += " nk-math-raw";
+          span.textContent = tex;
         }
         frag.appendChild(span);
       });
-      node.parentNode.replaceChild(frag, node);
+      if (node.parentNode) node.parentNode.replaceChild(frag, node);
     });
   }
 
@@ -179,11 +204,11 @@
     box.appendChild(h("div", { class: "nk-quiz-head" }, [h("span", { text: opts.title || "Quick check" }), score]));
     questions.forEach(function (q, qi) {
       var qEl = h("div", { class: "nk-q" });
-      qEl.appendChild(h("p", { class: "nk-q-stem", html: esc(q.stem) }));
-      var explain = h("div", { class: "nk-explain", hidden: "" , html: esc(q.explanation) });
+      qEl.appendChild(h("p", { class: "nk-q-stem", text: q.stem }));
+      var explain = h("div", { class: "nk-explain", hidden: "", text: q.explanation });
       var locked = false;
       q.options.forEach(function (opt, oi) {
-        var b = h("button", { class: "nk-opt", html: esc(opt) });
+        var b = h("button", { class: "nk-opt", text: opt });
         b.addEventListener("click", function () {
           if (locked) return; locked = true; answered++;
           var right = oi === q.answer;
@@ -203,6 +228,7 @@
     reset.addEventListener("click", function () { renderQuiz(mount, questions, opts); });
     box.appendChild(h("div", { class: "nk-quiz-foot" }, [reset]));
     mount.innerHTML = ""; mount.appendChild(box);
+    renderMath(box);
   }
   NK.quiz = renderQuiz;
 
@@ -249,6 +275,7 @@
       var k = Object.keys(known).length;
       meterFill.style.width = Math.round((k / cards.length) * 100) + "%";
       count.textContent = k + " / " + cards.length + " known  ·  card " + (i + 1) + "/" + order.length;
+      renderMath(face);
     }
     stage.addEventListener("click", function () { showFront = !showFront; render(); });
     function go(d) { i = (i + d + order.length) % order.length; showFront = true; render(); }
@@ -277,12 +304,16 @@
         var box = h("div", { class: "nk-qr" });
         (d.sections || []).forEach(function (s) {
           box.appendChild(h("h3", { text: s.title }));
-          box.appendChild(h("ul", {}, (s.points || []).map(function (p) { return h("li", { html: esc(p) }); })));
+          box.appendChild(h("ul", {}, (s.points || []).map(function (p) { return h("li", { text: p }); })));
         });
         if ((d.keyTerms || []).length) {
           box.appendChild(h("h3", { text: "Key terms" }));
           var dl = h("dl", { class: "nk-kt" });
-          d.keyTerms.forEach(function (t) { dl.appendChild(h("dt", { text: t.term })); dl.appendChild(h("dd", { text: t.definition })); });
+          d.keyTerms.forEach(function (t) {
+            var termText = /^\s*(\\\(|\\\$|\$)/.test(t.term) ? t.term : t.term;
+            dl.appendChild(h("dt", { text: termText }));
+            dl.appendChild(h("dd", { text: t.definition }));
+          });
           box.appendChild(dl);
         }
         el.replaceWith(box); renderMath(box);
@@ -301,7 +332,11 @@
           card.appendChild(h("div", { class: "nk-math-block", text: "$$" + f.latex + "$$" }));
           if ((f.symbols || []).length) {
             var dl = h("dl", { class: "nk-kt" });
-            f.symbols.forEach(function (s) { dl.appendChild(h("dt", { text: s.sym })); dl.appendChild(h("dd", { text: s.meaning })); });
+            f.symbols.forEach(function (s) {
+              var symText = /^\s*(\\\(|\\\$|\$)/.test(s.sym) ? s.sym : ("\\(" + s.sym + "\\)");
+              dl.appendChild(h("dt", { text: symText }));
+              dl.appendChild(h("dd", { text: s.meaning }));
+            });
             card.appendChild(dl);
           }
           if (f.useWhen) card.appendChild(h("div", { class: "nk-formula-when", text: "Use when: " + f.useWhen }));
@@ -320,7 +355,7 @@
         var box = h("div", { class: "nk-theory" });
         (d.questions || []).forEach(function (q) {
           var qEl = h("div", { class: "nk-theory-q" });
-          qEl.appendChild(h("p", { class: "nk-theory-prompt", html: esc(q.prompt) }));
+          qEl.appendChild(h("p", { class: "nk-theory-prompt", text: q.prompt }));
           qEl.appendChild(h("p", { class: "nk-theory-meta", text: (q.marks || 4) + " marks  ·  section " + (q.section || "?") }));
           var det = h("details", { "data-reveal": "" }, [h("summary", { text: "Model answer & marking scheme" })]);
           var body = h("div", { class: "reveal-body" });
@@ -334,12 +369,22 @@
     });
   }
   function mdLite(s) {
-    return esc(s)
+    if (!s) return "";
+    var mathTokens = [];
+    var protectedStr = String(s).replace(/(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|(?:\$(?!\s)[^$\n]+?(?<!\s)\$))/g, function (m) {
+      var idx = mathTokens.length;
+      mathTokens.push(m);
+      return "%%NKMATH" + idx + "%%";
+    });
+    var html = esc(protectedStr)
       .replace(/^### (.*)$/gm, "<h3>$1</h3>")
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/`([^`]+)`/g, "<code>$1</code>")
       .replace(/\n{2,}/g, "</p><p>")
       .replace(/\n/g, "<br>");
+    return html.replace(/%%NKMATH(\d+)%%/g, function (_, idx) {
+      return mathTokens[Number(idx)] || "";
+    });
   }
 
   /* ---------- charts (canvas, bar/line) ---------- */
@@ -381,6 +426,34 @@
     });
   }
 
+  /* ---------- viz iframes (auto-fit height, zero scrollbars) ---------- */
+  function hydrateVizIframes(root) {
+    root.querySelectorAll("figure iframe.viz").forEach(function (ifr) {
+      function adjustHeight() {
+        try {
+          var doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document);
+          if (doc && doc.body) {
+            var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+            if (h > 50) {
+              ifr.style.height = (h + 12) + "px";
+            }
+          }
+        } catch (e) {}
+      }
+      ifr.addEventListener("load", function () {
+        adjustHeight();
+        try {
+          var doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document);
+          if (doc && doc.defaultView && doc.defaultView.ResizeObserver) {
+            var ro = new doc.defaultView.ResizeObserver(adjustHeight);
+            ro.observe(doc.body);
+          }
+        } catch (e) {}
+      });
+      adjustHeight();
+    });
+  }
+
   /* ---------- boot ---------- */
   async function hydrate(root) {
     root = root || document;
@@ -393,6 +466,7 @@
     hydrateFormulas(root);
     hydrateTheory(root);
     hydrateCharts(root);
+    hydrateVizIframes(root);
     await renderMath(root);
     await renderMermaid(root);
     document.documentElement.setAttribute("data-nk-ready", "1");

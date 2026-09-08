@@ -11,6 +11,8 @@ Read `NOTES_SPEC.md` section 6. One request = one file `assets/viz/<name>.html`.
 - Fully self-contained: inline `<style>` + `<script>`, or `/note-kit/note-kit.js` helpers
   (`NoteKit.chart`). **No external URLs, no CDNs, no imports.**
 - Renders on a dark `#0a0b0e`/`#0e0f13` background with its own minimal CSS (host CSS absent).
+- **Zero Scrollbars:** Set `overflow: hidden;` on `html, body` and apply scrollbar suppression (`scrollbar-width: none !important; ::-webkit-scrollbar { display: none !important; }`). Layout must fit cleanly inside host iframes without scrollbars.
+- **Math Typography:** Use clean Unicode or HTML entities for math symbols in control labels (e.g., \(\theta, \sigma, \eta, w_i, \Delta\)).
 - Readable: labels on every axis / node / control; legend where needed; font >= 13px;
   colours from the note-kit palette (`--accent #6cc4c0`, `--good`, `--warn`, `--bad`, greys).
 - Interactive where it teaches: sliders / step buttons / toggles / drag. Label every control

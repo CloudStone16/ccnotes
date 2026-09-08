@@ -70,6 +70,20 @@ Nothing else at the notebook root. No external network assets anywhere in `secti
    `build/<deck>/coverage.json` records the same, and validation checks the union covers
    every slide the extractor found.
 
+### 3.1. Mathematical Formatting & KaTeX Contract
+
+1. **Strict LaTeX Delimiters:** Every mathematical variable, Greek letter (\(\theta, \sigma, \eta, \alpha, \mathbf{w}, \xi\)), expression, and formula across section HTMLs, worked examples, MCQ stems, MCQ options, MCQ explanations, flashcards, quickref points, formula sheets, and theory model answers **must** be formatted in standard LaTeX delimiters:
+   - Inline math: `\( ... \)` (or `$ ... $` in markdown theory files).
+   - Display/block math: `$$ ... $$` or `\[ ... \]`.
+2. **Zero Raw ASCII / Programmer Math:** Never output raw code strings in options or prose (e.g., `delta_j = a_j * (1 - a_j) * sum_k (delta_k * w_jk)`, `w <- w + eta*...`, `||w||/2`, or `x_1, x_2, ..., x_n`). These look unpolished, fail to render in KaTeX, and violate the spec.
+3. **Equation Wrapping & Alignment:** Multi-step derivations and long equality chains (chains with multiple `$=$` signs or lines exceeding 85 characters) **must** be formatted using `\begin{aligned} ... \end{aligned}` so that formulas wrap onto multiple lines aligned at the `$=$` operator, preventing horizontal overflow.
+
+### 3.2. Layout, Container Width & Zero-Scrollbars Standard
+
+1. **Fluid Container Sizing:** Note containers must expand naturally (`--maxw: min(94vw, 1080px)`) to provide ample room for equations, tables, and multi-column callouts.
+2. **Zero Scrollbars:** Desktop scrollbars must never appear on math blocks, worked examples, code boxes, or callout cards. All elements must employ global scrollbar suppression (`scrollbar-width: none !important; -ms-overflow-style: none !important; ::-webkit-scrollbar { display: none !important; }`).
+3. **Interactive Visualizer Iframes:** All widgets in `assets/viz/*.html` must use `overflow: hidden;` on `html, body` and dynamically adapt height to avoid iframe scrollbars.
+
 ---
 
 ## 4. `manifest.json`
@@ -251,5 +265,6 @@ A notebook is **ready** only if ALL hold:
 7. No `https?://` match anywhere under `sections/`, `assets/`, `index.html`, `isa/`.
 8. `SKILL_SOURCE.md` present, >= 40 lines, contains headings for Glossary and Formula list.
 9. `id` and `alias` unique in `content/registry.json`.
+10. All mathematical expressions across `data/*.json` and section HTMLs parse cleanly in KaTeX without syntax errors, with zero unformatted ASCII math in MCQ options.
 
 Exit non-zero on any failure with a precise list. `ccnotes-assemble` must not register on failure.

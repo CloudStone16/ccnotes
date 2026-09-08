@@ -6,15 +6,16 @@
   --ink:#d7dae0; --ink-dim:#9aa0ab; --ink-faint:#6b7280;
   --accent:#6cc4c0; --accent-dim:#2f4d4c;
   --good:#7bbd8b; --bad:#d98a8a; --warn:#d9c48a;
-  --radius:10px; --maxw:760px;
+    --radius:10px; --maxw:min(94vw, 1080px);
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
-*{box-sizing:border-box}
+*, *::before, *::after{box-sizing:border-box;scrollbar-width:none !important;-ms-overflow-style:none !important}
+*::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
   font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
 body{padding:0}
-.note{max-width:var(--maxw);margin:0 auto;padding:48px 24px 120px}
+.note{max-width:var(--maxw);width:100%;margin:0 auto;padding:48px 32px 120px}
 .note-head{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:32px}
 .crumb{color:var(--ink-faint);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 10px}
 .note-head h1{font-size:30px;line-height:1.25;margin:0 0 10px;font-weight:650}
@@ -35,7 +36,7 @@ body{padding:0}
 .prose th,.prose td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
 .prose th{background:var(--bg-raise);font-weight:600}
 figure{margin:22px 0}
-figure iframe.viz{width:100%;height:440px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-sink)}
+figure iframe.viz{width:100%;min-height:480px;height:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-sink);display:block;overflow:hidden}
 figcaption{color:var(--ink-faint);font-size:13px;margin-top:8px;text-align:center}
 hr{border:none;border-top:1px solid var(--line);margin:32px 0}
 
@@ -126,7 +127,8 @@ hr{border:none;border-top:1px solid var(--line);margin:32px 0}
 .nk-theory-meta{font-size:12px;color:var(--ink-faint);margin:4px 0 8px}
 
 /* math + mermaid fallbacks */
-.nk-math-block{display:block;margin:14px 0;overflow-x:auto}
+.nk-math-block, .katex-display{display:block;margin:14px 0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none !important;-ms-overflow-style:none !important}
+.nk-math-block::-webkit-scrollbar, .katex-display::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important}
 .katex{font-size:1.02em}
 pre.mermaid{white-space:pre}
 pre.mermaid[data-nk-rendered] {white-space:normal}
