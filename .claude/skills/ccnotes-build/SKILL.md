@@ -6,13 +6,13 @@ description: Orchestrate building one unit's interactive notebook from its slide
 # ccnotes-build — pipeline orchestrator
 
 You are the conductor. **You never read slide or section content yourself** — only file
-names, counts, and `build/PROGRESS.md`. Every heavy step is a subagent (Task tool) that
+names, counts, and `build/PROGRESS.md`. Every heavy step is delegated to a subagent that
 returns a short report. This keeps your context small and the build cheap and fast.
 
 ## 0. Read first (once)
 - `NOTES_SPEC.md` — the whole file.
 - The target: a notebook `id` (or `alias`) + a deck folder under `inbox/`.
-  No notebook yet? `bun tools/new-notebook.mjs "<Subject>" <unitNo> "<Title>"` — it creates
+  No notebook yet? `node tools/new-notebook.mjs "<Subject>" <unitNo> "<Title>"` — it creates
   the notebook folder AND the inbox folder, and prints both.
 
 ## 1. Normalize decks (fast, no content reads)
@@ -63,14 +63,14 @@ for traceability — NOT the raw decks". Each writes its own `data/*.json` and r
 
 ### 6. Assemble + validate (sequential)
 `ccnotes-assemble`: builds `index.html`, `isa/index.html`, `manifest.json`, `SKILL_SOURCE.md`;
-runs `bun tools/validate-notebook.mjs <id>`; sets registry `status: "ready"` only on pass;
+runs `node tools/validate-notebook.mjs <id>`; sets registry `status: "ready"` only on pass;
 reports the validator output verbatim.
 On failure: read the precise error list, dispatch the **smallest** targeted fix to the one
 responsible sub-skill (e.g. "flashcards count low" -> re-run `ccnotes-flashcards` only),
 tick PROGRESS, re-assemble. Repeat.
 
 ### 7. Doubt skill
-On a green validate: `bun tools/gen-doubt-skill.mjs <id>`. Tick PROGRESS.
+On a green validate: `node tools/gen-doubt-skill.mjs <id>`. Tick PROGRESS.
 
 ### 8. Report to the user (short)
 id + alias · sections · slide coverage (must be 100%) · counts (section MCQs / flashcards /
