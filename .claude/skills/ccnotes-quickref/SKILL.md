@@ -22,6 +22,7 @@ Read `NOTES_SPEC.md` section 8. Source: finished `sections/*.html`.
 ## Rules
 - Nothing outside the unit. Every point traceable to a section.
 - Keep points to one line; move nuance to the section notes, not here.
+- **KaTeX Delimiters:** Every formula, variable, and symbol in `points[]` and `keyTerms[].definition` **must** be enclosed in LaTeX delimiters (`\( ... \)`). Never write raw ASCII formulas.
 
 ## Report (<=6 lines)
 quickref block count, key-term count, formula count.

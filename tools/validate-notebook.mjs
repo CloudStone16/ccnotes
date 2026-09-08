@@ -1,6 +1,7 @@
 /* Enforce the NOTES_SPEC section 11 invariants for one notebook. */
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 import { ROOT, CONTENT, readJson, loadRegistry, walk } from "./lib.mjs";
 import { validate } from "./minivalidate.mjs";
 
@@ -116,6 +117,83 @@ export function validateNotebook(nbDir) {
     const aliases = reg.notebooks.filter((n) => n.alias === m.alias);
     if (ids.length > 1) E(`duplicate id in registry: ${m.id}`);
     if (aliases.length > 1) E(`duplicate alias in registry: ${m.alias}`);
+  }
+
+  // 10. math validation (KaTeX syntax & ASCII math check)
+  const katexPath = path.join(ROOT, "viewer", "note-kit", "vendor", "katex", "katex.min.js");
+  if (fs.existsSync(katexPath)) {
+    let katex = null;
+    try {
+      const sandbox = {};
+      vm.runInNewContext(fs.readFileSync(katexPath, "utf8"), sandbox);
+      katex = sandbox.katex;
+    } catch (_) {}
+
+    if (katex && typeof katex.renderToString === "function") {
+      const testMath = (str, label) => {
+        if (!str || typeof str !== "string") return;
+        const matches = str.match(/\\\([\s\S]*?\\\)|(?:\$\$[\s\S]+?\$\$)/g) || [];
+        for (const mt of matches) {
+          const isBlock = mt.startsWith("$$");
+          const tex = mt.slice(2, -2).trim();
+          try {
+            katex.renderToString(tex, { displayMode: isBlock, throwOnError: true });
+          } catch (err) {
+            E(`KaTeX syntax error in ${label}: "${tex}" -> ${err.message}`);
+          }
+        }
+      };
+
+      const checkAsciiMath = (opt, label) => {
+        if (typeof opt !== "string" || opt.includes("\\(")) return;
+        if (/(?:delta_[a-z0-9]|sum_[a-z0-9]|\b[wxbzya]_[0-9a-z]\b|\b[a-z]\^\{?[0-9]+\}?|[a-z0-9]\s*\*\s*[a-z0-9])/i.test(opt)) {
+          E(`Unformatted ASCII math in ${label}: "${opt}" (must use \\( ... \\))`);
+        }
+      };
+
+      // mcqs
+      if (parsed["data/mcqs.json"]) {
+        const mcq = parsed["data/mcqs.json"];
+        const allQ = [
+          ...(mcq.sectionChecks || []).flatMap((s) => s.items || []),
+          ...((mcq.isa && mcq.isa.mark1) || []),
+          ...((mcq.isa && mcq.isa.mark2) || [])
+        ];
+        allQ.forEach((q) => {
+          testMath(q.stem, `${q.id} stem`);
+          testMath(q.explanation, `${q.id} explanation`);
+          (q.options || []).forEach((opt, i) => {
+            testMath(opt, `${q.id} opt ${i + 1}`);
+            checkAsciiMath(opt, `${q.id} opt ${i + 1}`);
+          });
+        });
+      }
+
+      // flashcards
+      if (parsed["data/flashcards.json"]) {
+        (parsed["data/flashcards.json"].deck || []).forEach((c) => {
+          testMath(c.front, `${c.id} front`);
+          testMath(c.back, `${c.id} back`);
+        });
+      }
+
+      // formulas
+      if (parsed["data/formulas.json"]) {
+        (parsed["data/formulas.json"].formulas || []).forEach((f) => {
+          testMath(`\\(${f.latex}\\)`, `${f.id} latex`);
+          (f.symbols || []).forEach((s) => testMath(`\\(${s.sym}\\)`, `${f.id} symbol`));
+        });
+      }
+
+      // quickref
+      if (parsed["data/quickref.json"]) {
+        const qr = parsed["data/quickref.json"];
+        (qr.sections || []).forEach((s, si) => {
+          (s.points || []).forEach((pt, pi) => testMath(pt, `quickref sec ${si + 1} pt ${pi + 1}`));
+        });
+        (qr.keyTerms || []).forEach((kt) => testMath(kt.definition, `keyterm ${kt.term}`));
+      }
+    }
   }
 
   return { id: m && m.id, path: rel, ok: errors.length === 0, errors };

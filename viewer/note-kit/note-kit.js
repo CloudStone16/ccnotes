@@ -179,11 +179,11 @@
     box.appendChild(h("div", { class: "nk-quiz-head" }, [h("span", { text: opts.title || "Quick check" }), score]));
     questions.forEach(function (q, qi) {
       var qEl = h("div", { class: "nk-q" });
-      qEl.appendChild(h("p", { class: "nk-q-stem", html: esc(q.stem) }));
-      var explain = h("div", { class: "nk-explain", hidden: "" , html: esc(q.explanation) });
+      qEl.appendChild(h("p", { class: "nk-q-stem", text: q.stem }));
+      var explain = h("div", { class: "nk-explain", hidden: "", text: q.explanation });
       var locked = false;
       q.options.forEach(function (opt, oi) {
-        var b = h("button", { class: "nk-opt", html: esc(opt) });
+        var b = h("button", { class: "nk-opt", text: opt });
         b.addEventListener("click", function () {
           if (locked) return; locked = true; answered++;
           var right = oi === q.answer;
@@ -203,6 +203,7 @@
     reset.addEventListener("click", function () { renderQuiz(mount, questions, opts); });
     box.appendChild(h("div", { class: "nk-quiz-foot" }, [reset]));
     mount.innerHTML = ""; mount.appendChild(box);
+    renderMath(box);
   }
   NK.quiz = renderQuiz;
 
@@ -249,6 +250,7 @@
       var k = Object.keys(known).length;
       meterFill.style.width = Math.round((k / cards.length) * 100) + "%";
       count.textContent = k + " / " + cards.length + " known  ·  card " + (i + 1) + "/" + order.length;
+      renderMath(face);
     }
     stage.addEventListener("click", function () { showFront = !showFront; render(); });
     function go(d) { i = (i + d + order.length) % order.length; showFront = true; render(); }
@@ -277,7 +279,7 @@
         var box = h("div", { class: "nk-qr" });
         (d.sections || []).forEach(function (s) {
           box.appendChild(h("h3", { text: s.title }));
-          box.appendChild(h("ul", {}, (s.points || []).map(function (p) { return h("li", { html: esc(p) }); })));
+          box.appendChild(h("ul", {}, (s.points || []).map(function (p) { return h("li", { text: p }); })));
         });
         if ((d.keyTerms || []).length) {
           box.appendChild(h("h3", { text: "Key terms" }));
@@ -320,7 +322,7 @@
         var box = h("div", { class: "nk-theory" });
         (d.questions || []).forEach(function (q) {
           var qEl = h("div", { class: "nk-theory-q" });
-          qEl.appendChild(h("p", { class: "nk-theory-prompt", html: esc(q.prompt) }));
+          qEl.appendChild(h("p", { class: "nk-theory-prompt", text: q.prompt }));
           qEl.appendChild(h("p", { class: "nk-theory-meta", text: (q.marks || 4) + " marks  ·  section " + (q.section || "?") }));
           var det = h("details", { "data-reveal": "" }, [h("summary", { text: "Model answer & marking scheme" })]);
           var body = h("div", { class: "reveal-body" });
@@ -334,12 +336,47 @@
     });
   }
   function mdLite(s) {
-    return esc(s)
+    var mathTokens = [];
+    s = String(s == null ? "" : s).replace(/(\$\$[\s\S]+?\$\$|\\\([\s\S]+?\\\))/g, function (m) {
+      var idx = mathTokens.push(m) - 1;
+      return "%%NKMATH" + idx + "%%";
+    });
+    var out = esc(s)
       .replace(/^### (.*)$/gm, "<h3>$1</h3>")
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/`([^`]+)`/g, "<code>$1</code>")
       .replace(/\n{2,}/g, "</p><p>")
       .replace(/\n/g, "<br>");
+    return out.replace(/%%NKMATH(\d+)%%/g, function (_, i) {
+      return mathTokens[Number(i)] || "";
+    });
+  }
+
+  /* ---------- interactive viz iframe auto-height ---------- */
+  function hydrateVizIframes(root) {
+    root.querySelectorAll("iframe").forEach(function (ifr) {
+      ifr.setAttribute("scrolling", "no");
+      ifr.style.overflow = "hidden";
+      function syncHeight() {
+        try {
+          var doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document);
+          if (doc && doc.body) {
+            doc.body.style.overflow = "hidden";
+            var h = doc.documentElement.scrollHeight || doc.body.scrollHeight;
+            if (h && h > 50) ifr.style.height = (h + 4) + "px";
+          }
+        } catch (_) {}
+      }
+      ifr.addEventListener("load", function () {
+        syncHeight();
+        try {
+          var doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document);
+          if (doc && window.ResizeObserver) {
+            new ResizeObserver(syncHeight).observe(doc.body);
+          }
+        } catch (_) {}
+      });
+    });
   }
 
   /* ---------- charts (canvas, bar/line) ---------- */
@@ -393,6 +430,7 @@
     hydrateFormulas(root);
     hydrateTheory(root);
     hydrateCharts(root);
+    hydrateVizIframes(root);
     await renderMath(root);
     await renderMermaid(root);
     document.documentElement.setAttribute("data-nk-ready", "1");
