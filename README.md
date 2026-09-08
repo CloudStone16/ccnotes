@@ -1,16 +1,16 @@
 # ccnotes
 
-**A local platform for interactive, exam-focused study notes that Claude Code builds from your slide decks.**
+**A local platform for interactive, exam-focused study notes that Claude Code and Google Antigravity / Gemini build from your slide decks.**
 
-You give it a unit's slide decks. Claude Code agents read every slide, one deck at a time, and
+You give it a unit's slide decks. AI agents (Claude Code or Google Antigravity / Gemini) read every slide, one deck at a time, and
 produce a single interactive notebook for that unit: enhanced notes (everything in the slides,
 made clearer — nothing invented), per-section MCQ checks, a flashcard deck, a quick-reference
 sheet, a formula sheet, and an ISA-prep pack (1-mark MCQs, 2-mark MCQs, 4-mark theory with
 model answers). A small zero-dependency server lets you browse it all — subject → unit →
 section — search everything, and jump straight to an answer.
 
-Every notebook also gets its own auto-generated **doubt-clarifier skill**, so a fresh Claude
-Code session can be handed the notebook id and instantly has full context to tutor you on that
+Every notebook also gets its own auto-generated **doubt-clarifier skill** (in `.agents/skills/` and `.claude/skills/`), so a fresh
+AI session can be handed the notebook id and instantly has full context to tutor you on that
 unit.
 
 Everything renders **offline** in **dark mode**, tuned to be readable and non-distracting.
@@ -19,9 +19,9 @@ Everything renders **offline** in **dark mode**, tuned to be readable and non-di
 
 ## Requirements
 
-- [**Bun**](https://bun.sh) — the only runtime. No `npm`, no `node_modules`, zero dependencies.
-- [**Claude Code**](https://claude.com/claude-code) — to run the note-building skills.
-- A POSIX shell (`unzip`, `curl`) — standard on macOS/Linux.
+- [**Node.js**](https://nodejs.org) (>= 20) or [**Bun**](https://bun.sh) — zero external npm dependencies.
+- [**Google Antigravity**](https://antigravity.google) / **Gemini** or [**Claude Code**](https://claude.com/claude-code) — to run the note-building skills.
+- A POSIX shell or PowerShell (`unzip`, `curl`).
 
 ## Install
 
@@ -69,17 +69,17 @@ risk to the shell.
 
 ## Make notes for a unit
 
-The `ccnotes-*` skills are **project-local** (`.claude/skills/`), so **Claude Code must be
-running in this repo**.
+The `ccnotes-*` skills are **project-local** in `.agents/skills/` (for Google Antigravity / Gemini) and `.claude/skills/` (for Claude Code), so **run your AI agent from this repo root**.
 
-1. **Open the repo in Claude Code**
-   - Desktop app: open `~/dev/ccnotes` as the working folder.
-   - Terminal: `cd ~/dev/ccnotes && claude`
+1. **Open the repo in your agent**
+   - **Google Antigravity**: Open the repo folder in Antigravity IDE or run `agy` in your terminal.
+   - **Claude Code**: Open the repo folder in Claude desktop or run `claude` in your terminal.
 
 2. **Scaffold the unit** (once per unit):
 
    ```bash
    ccnotes new "Operating Systems" 3 "Memory Management"
+   # or: node tools/new-notebook.mjs "Operating Systems" 3 "Memory Management"
    ```
 
    This creates the notebook folder **and** the inbox folder, and prints both — e.g.
@@ -88,12 +88,12 @@ running in this repo**.
 3. **Drop the decks** for that unit into that inbox folder — any mix of `.zip`, `.pptx`,
    `.pdf`, or exported Google Slides. One deck or many.
 
-4. **Tell Claude Code to build it:**
+4. **Tell your agent to build it:**
 
    > run ccnotes-build for notebook `ccnotes_xxxxxx` from `inbox/operating-systems/unit-3`
 
 5. When it finishes: **refresh the server**. The notebook is live, and a
-   `ccnotes-doubt-<id>` skill now exists.
+   `ccnotes-doubt-<id>` skill now exists in both `.agents/skills/` and `.claude/skills/`.
 
 Repeat 2–5 for each unit. Same subject, different unit = just another `ccnotes new`.
 
@@ -110,7 +110,7 @@ It orchestrates a pipeline of sub-skills, mostly in parallel subagents, tracking
 | assess (parallel) | `ccnotes-mcq`, `ccnotes-flashcards`, `ccnotes-theory`, `ccnotes-quickref` | `data/*.json` |
 | assemble | `ccnotes-assemble` | `index.html`, `isa/index.html`, `manifest.json`, `SKILL_SOURCE.md` |
 | validate + register | `tools/validate-notebook.mjs` | notebook goes `ready` only if every invariant passes |
-| tutor skill | `tools/gen-doubt-skill.mjs` | `.claude/skills/ccnotes-doubt-<id>/` |
+| tutor skill | `tools/gen-doubt-skill.mjs` | `.agents/skills/ccnotes-doubt-<id>/` & `.claude/skills/ccnotes-doubt-<id>/` |
 
 The contract every skill follows is [`NOTES_SPEC.md`](NOTES_SPEC.md). Core rules:
 
@@ -124,7 +124,7 @@ The contract every skill follows is [`NOTES_SPEC.md`](NOTES_SPEC.md). Core rules
 ## Ask doubts about a unit
 
 Each notebook has a generated skill named `ccnotes-doubt-<id>` (description includes the id,
-alias, and topic list). In any Claude Code session **run from this repo**:
+alias, and topic list). In any Antigravity or Claude Code session **run from this repo**:
 
 > load ccnotes-doubt-ccnotes_xxxxxx — I have a doubt about page tables
 
@@ -137,11 +137,12 @@ practice items, and constrains it to answer from the unit's own material with `s
 ## Delete a unit
 
 ```bash
-bun tools/delete-notebook.mjs <id|alias> --yes
+node tools/delete-notebook.mjs <id|alias> --yes
+# or: bun tools/delete-notebook.mjs <id|alias> --yes
 ```
 
-Removes the notebook folder, its `ccnotes-doubt-<id>` skill, and its registry entry. Or ask
-Claude Code to run the `ccnotes-delete` skill (it confirms first).
+Removes the notebook folder, its `ccnotes-doubt-<id>` skills from both `.agents/` and `.claude/`, and its registry entry. Or ask
+your agent to run the `ccnotes-delete` skill (it confirms first).
 
 ## Validate the library
 
@@ -156,7 +157,7 @@ or click the health dot in the sidebar.
 ## Project layout
 
 ```
-server.mjs               zero-dependency Bun server (shell, note-kit, content, /api/*, /health)
+server.mjs               zero-dependency HTTP server (shell, note-kit, content, /api/*, /health)
 scripts/
   ccnotes.sh             the `ccnotes` CLI
   setup-vendor.mjs       downloads KaTeX + mermaid for offline rendering
@@ -164,8 +165,9 @@ viewer/
   index.html shell.*     the browsing shell (nav tree, search, keyboard)
   note-kit/              shared interactive layer injected into every note
     note-kit.js  .css     MCQ / quiz / flashcards / theory / tabs / steps / reveal / math / mermaid / charts
-    vendor/               KaTeX + mermaid (git-ignored; run `bun run setup`)
-NOTES_SPEC.md             the contract every build skill obeys
+    vendor/               KaTeX + mermaid (git-ignored; run setup script)
+GEMINI.md                Antigravity / Gemini instructions and invariants
+NOTES_SPEC.md            the contract every build skill obeys
 templates/
   section.html unit-index.html isa-index.html
   progress.md             per-build progress tracker
@@ -174,8 +176,9 @@ tools/
   scan.mjs                builds the catalog + search index
   validate-notebook.mjs   enforces every NOTES_SPEC §11 invariant
   validate-all.mjs
-  new-notebook.mjs delete-notebook.mjs gen-doubt-skill.mjs
-.claude/skills/ccnotes-*  the build pipeline skills
+  new-notebook.mjs delete-notebook.mjs gen-doubt-skill.mjs sync-skills.mjs
+.agents/skills/ccnotes-* Antigravity / Gemini build pipeline skills
+.claude/skills/ccnotes-* Claude Code build pipeline skills
 content/                  built notebooks (git-ignored — your notes)
 inbox/                    your source slide decks (git-ignored)
 ```

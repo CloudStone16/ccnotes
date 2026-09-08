@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
-import { CONTENT, SKILLS, loadRegistry, saveRegistry } from "./lib.mjs";
+import { ROOT, CONTENT, SKILL_DIRS, loadRegistry, saveRegistry } from "./lib.mjs";
 
 const target = process.argv[2];
 const assumeYes = process.argv.includes("--yes");
@@ -13,10 +13,13 @@ const nb = reg.notebooks.find((n) => n.id === target || n.alias === target);
 if (!nb) { console.error("not found: " + target); process.exit(1); }
 
 const nbDir = path.join(CONTENT, nb.path);
-const skillDir = path.join(SKILLS, `ccnotes-doubt-${nb.id}`);
+const skillDirs = SKILL_DIRS.map((d) => path.join(d, `ccnotes-doubt-${nb.id}`));
 const plan = [
   fs.existsSync(nbDir) ? `  rm -rf content/${nb.path}` : `  (content folder already gone)`,
-  fs.existsSync(skillDir) ? `  rm -rf .claude/skills/ccnotes-doubt-${nb.id}` : `  (doubt skill already gone)`,
+  ...skillDirs.map((d) => {
+    const rel = path.relative(ROOT, d).replace(/\\/g, "/");
+    return fs.existsSync(d) ? `  rm -rf ${rel}` : `  (${rel} already gone)`;
+  }),
   `  remove registry entry ${nb.id} (${nb.alias})`
 ];
 console.log(`About to permanently delete "${nb.subject} — Unit ${nb.unitNo}: ${nb.title}"`);
@@ -35,7 +38,7 @@ const rmrf = (p) => fs.existsSync(p) && fs.rmSync(p, { recursive: true, force: t
 confirm().then((ok) => {
   if (!ok) { console.log("aborted."); process.exit(1); }
   rmrf(nbDir);
-  rmrf(skillDir);
+  skillDirs.forEach(rmrf);
   // prune now-empty subject dir
   const subjDir = path.dirname(nbDir);
   try { if (fs.readdirSync(subjDir).length === 0) fs.rmdirSync(subjDir); } catch {}
