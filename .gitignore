@@ -20,7 +20,8 @@ viewer/note-kit/vendor/*
 /.claude/skills/ccnotes-doubt-*/
 
 # --- .agents/skills/ is generated from .claude/skills/ by `npm run setup`
-#     (mirror for Antigravity); never edit or commit it — edit .claude/skills/ ---
+#     (Codex / Gemini / Antigravity mirror); never edit or commit it — edit
+#     .claude/skills/ and regenerate it ---
 /.agents/skills/
 
 # --- local machine state ---

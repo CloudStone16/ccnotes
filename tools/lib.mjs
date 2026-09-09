@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 export const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 export const CONTENT = path.join(ROOT, "content");
 // .claude/skills/ is the source of truth (committed). .agents/skills/ is a
-// generated mirror for Antigravity, produced by tools/sync-skills.mjs.
+// generated mirror for Codex, Gemini CLI, and Antigravity, produced by
+// tools/sync-skills.mjs.
 export const CLAUDE_SKILLS = path.join(ROOT, ".claude", "skills");
 export const AGENTS_SKILLS = path.join(ROOT, ".agents", "skills");
 export const SKILL_DIRS = [CLAUDE_SKILLS, AGENTS_SKILLS];

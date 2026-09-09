@@ -39,14 +39,16 @@ Every skill and every agent action in this repo must respect these (the validato
 ## 2. Skills
 
 The build pipeline is a set of skills. **`.claude/skills/` is the source of truth and the
-only copy in git.** `.agents/skills/` is a generated mirror for Antigravity — produced by
-`node tools/sync-skills.mjs` (also run by `npm run setup`) and git-ignored. Never edit
-`.agents/skills/` by hand; edit `.claude/skills/` and re-run the sync.
+only copy in git.** `.agents/skills/` is a generated mirror for Codex, Gemini CLI, and
+Antigravity — produced by `node tools/sync-skills.mjs` (also run by `npm run setup`) and
+git-ignored. Never edit `.agents/skills/` by hand; edit `.claude/skills/` and re-run the
+sync.
 
-Both Claude Code and Antigravity discover skills by the `SKILL.md` frontmatter
-(`name`, `description`) and load the body on relevance. Agents without a skill mechanism
-(Codex, Gemini CLI, Cursor) should read the relevant `.claude/skills/<skill>/SKILL.md`
-directly and follow it, plus the CLI commands in section 3.
+Claude Code discovers the source skills in `.claude/skills/`. Codex, Gemini CLI, and
+Antigravity discover the generated skills in `.agents/skills/`. Each agent uses the
+`SKILL.md` frontmatter (`name`, `description`) to select a relevant skill and then loads its
+body. Other agents should read the relevant `.claude/skills/<skill>/SKILL.md` directly and
+follow it, plus the CLI commands in section 3.
 
 | Skill | Role |
 |---|---|
@@ -75,6 +77,7 @@ Run with `node` (default) or `bun` — pick whichever is installed:
 - **Generate / refresh a doubt skill**: `node tools/gen-doubt-skill.mjs <id|alias>` (writes to `.claude/skills/` and `.agents/skills/`)
 - **Delete a notebook**: `node tools/delete-notebook.mjs <id|alias> [--yes]`
 - **Mirror skills to `.agents/skills/`**: `node tools/sync-skills.mjs`
+- **Verify the Codex-compatible skill mirror**: `npm run check:agent-skills`
 - **Start the server**: `node server.mjs` (default port 4319)
 
 ---
@@ -95,6 +98,10 @@ When running `ccnotes-build`:
 
 ## 5. Notes for specific agents
 
+- **Codex**: automatically reads this `AGENTS.md`. Its project skills live in
+  `.agents/skills/`; on a fresh clone run `npm run setup:codex` (or the full
+  `npm run setup`) before invoking a `ccnotes-*` skill. Codex detects generated skills
+  automatically; restart the session if a newly generated skill does not appear.
 - **Antigravity**: skills live in `.agents/skills/` (generated). Its browser subagent covers
   `ccnotes-viz-verify`'s browser checks.
 - **Claude Code**: skills live in `.claude/skills/`. Browser checks use the
