@@ -18,6 +18,7 @@ Read `NOTES_SPEC.md` section 8 (mcqs shape) and section 11.5 (minimums). Work fr
 
 ## Quality rules
 - **Not answerable by string-matching a slide bullet.** Rework the scenario, numbers, or framing.
+- **Flawless Math Formatting:** Every formula, variable, Greek symbol (\(\theta, \sigma, \eta, \alpha_i, \mathbf{w}, \xi_i\)), and calculation in stems, options, and explanations **must** be enclosed in LaTeX delimiters (`\( ... \)`). NEVER output raw ASCII pseudo-code (e.g. `delta_j = a_j * (1 - a_j) * sum_k ...` or `||w||/2`).
 - Exactly one correct option; 3–4 options; distractors are plausible misconceptions, not filler.
 - `answer` = 0-based index. Always fill `explanation` (why right + why the tempting wrong one is wrong).
 - Stay inside unit content. Tag `section` and `conceptRef`.

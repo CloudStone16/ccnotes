@@ -38,6 +38,8 @@ Log both passes in one line each to `build/PROGRESS.md` `## Subagent log`, and p
 4. Group the slides into 2–5 `<h2>` subsections with a logical arc; keep slide order within.
 5. Use note-kit blocks: `data-callout`, `data-reveal`, `data-tabs`, `data-steps`,
    `\( \)` / `$$ $$`, `<pre class="mermaid">`, `<canvas data-chart>`.
+   - **Math & Equation Formatting:** All mathematical variables, symbols, and formulas **must** use LaTeX delimiters (`\( ... \)` inline, `$$ ... $$` block). Never use raw ASCII pseudo-code.
+   - **Multi-step Alignment:** Equations with multiple equality steps or derivations **must** be broken onto aligned lines using `\begin{aligned} ... \end{aligned}` to prevent horizontal overflow and scrollbars.
    For anything that deserves a real interactive diagram, DON'T build it here — add a
    viz-request instead and leave a `<figure><iframe class="viz" src="../assets/viz/<name>.html">`
    placeholder (ccnotes-viz-build fills it, ccnotes-viz-verify checks it).

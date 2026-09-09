@@ -1,4 +1,6 @@
 /* ccnotes viewer shell — dark, minimal, non-distracting. */
+*, *::before, *::after{scrollbar-width:none !important;-ms-overflow-style:none !important}
+*::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important}
 html,body{height:100%}
 #app{display:grid;grid-template-columns:300px 1fr;height:100vh}
 #sidebar{background:var(--bg-sink);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}

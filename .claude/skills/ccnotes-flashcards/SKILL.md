@@ -19,6 +19,7 @@ cover, across sections:
 ## Card rules
 - One idea per card. Back is answerable in 1–3 sentences (or a short list).
 - Front is a real question or cloze, not a topic label.
+- **Math Formatting:** All formulas, variables, and math notation on front and back **must** be enclosed in LaTeX delimiters (`\( ... \)`).
 - No card requires knowledge from outside the unit.
 - `id` = `fc-001`, `fc-002`, ... zero-padded, contiguous. Tag `section` and `tags[]`.
 - Aim for >= 8 x (section count); more is fine if the content warrants it.
