@@ -2,7 +2,7 @@
 
 **A local platform for interactive, exam-focused study notes that coding agents build from your slide decks.**
 
-You give it a unit's slide decks. A coding agent (Claude Code or Google Antigravity) reads every slide, one deck at a time, and
+You give it a unit's slide decks. A coding agent (Codex, Claude Code, Gemini CLI, or Google Antigravity) reads every slide, one deck at a time, and
 produces a single interactive notebook for that unit: enhanced notes (everything in the slides,
 made clearer — nothing invented), per-section MCQ checks, a flashcard deck, a quick-reference
 sheet, a formula sheet, and an ISA-prep pack (1-mark MCQs, 2-mark MCQs, 4-mark theory with
@@ -20,7 +20,7 @@ Everything renders **offline** in **dark mode**, tuned to be readable and non-di
 ## Requirements
 
 - [**Node.js**](https://nodejs.org) (>= 20) or [**Bun**](https://bun.sh) — zero external npm dependencies.
-- [**Claude Code**](https://claude.com/claude-code) or [**Google Antigravity**](https://antigravity.google) — to run the note-building skills. Any agent that reads `AGENTS.md` (Codex, Gemini CLI, Cursor) can drive the same pipeline by running the tool commands directly.
+- [**Codex**](https://developers.openai.com/codex/), [**Claude Code**](https://claude.com/claude-code), [**Gemini CLI**](https://geminicli.com), or [**Google Antigravity**](https://antigravity.google) — to run the note-building skills.
 - A POSIX shell with `unzip` and `curl` (standard on macOS/Linux).
 
 ## Install
@@ -28,10 +28,14 @@ Everything renders **offline** in **dark mode**, tuned to be readable and non-di
 ```bash
 git clone git@github.com:CloudStone16/ccnotes.git
 cd ccnotes
-npm run setup        # one-time: downloads KaTeX + mermaid for offline math + diagrams, and mirrors .claude/skills/ → .agents/skills/ for Antigravity
+npm run setup        # one-time: downloads offline assets and exposes the skills to Codex, Gemini, and Antigravity
 ```
 
 (`bun run setup` works too.)
+
+Codex only needs the agent files, so it can be bootstrapped without downloading the browser
+assets: `npm run setup:codex`. Use `npm run check:agent-skills` to verify the generated
+`.agents/skills/` tree matches the committed skill source.
 
 Optional — add the `ccnotes` command to your shell (`~/.zshrc`):
 
@@ -72,10 +76,11 @@ risk to the shell.
 ## Make notes for a unit
 
 The `ccnotes-*` skills are **project-local**: `.claude/skills/` (Claude Code, the source of
-truth) and its generated mirror `.agents/skills/` (Antigravity). So **run your agent from this
-repo root**.
+truth) and its generated mirror `.agents/skills/` (Codex, Gemini CLI, and Antigravity). So
+**run your agent from this repo root**.
 
 1. **Open the repo in your agent**
+   - **Codex**: run `npm run setup:codex`, then open the repo root in the Codex app, IDE extension, or CLI. Codex reads `AGENTS.md` and discovers the generated `.agents/skills/` automatically.
    - **Claude Code**: open the repo folder in Claude desktop, or run `claude` in your terminal.
    - **Google Antigravity**: open the repo folder in Antigravity (run `npm run setup` first if `.agents/skills/` is missing).
 
@@ -128,7 +133,8 @@ The contract every skill follows is [`NOTES_SPEC.md`](NOTES_SPEC.md). Core rules
 ## Ask doubts about a unit
 
 Each notebook has a generated skill named `ccnotes-doubt-<id>` (description includes the id,
-alias, and topic list). In any Antigravity or Claude Code session **run from this repo**:
+alias, and topic list). In any Codex, Gemini, Antigravity, or Claude Code session
+**run from this repo**:
 
 > load ccnotes-doubt-ccnotes_xxxxxx — I have a doubt about page tables
 
@@ -170,7 +176,7 @@ viewer/
   note-kit/              shared interactive layer injected into every note
     note-kit.js  .css     MCQ / quiz / flashcards / theory / tabs / steps / reveal / math / mermaid / charts
     vendor/               KaTeX + mermaid (git-ignored; run `npm run setup`)
-AGENTS.md                shared agent rules (Claude Code, Antigravity, Codex)
+AGENTS.md                project instructions loaded automatically by Codex
 NOTES_SPEC.md            the contract every build skill obeys
 templates/
   section.html unit-index.html isa-index.html
@@ -182,7 +188,7 @@ tools/
   validate-all.mjs
   new-notebook.mjs delete-notebook.mjs gen-doubt-skill.mjs sync-skills.mjs
 .claude/skills/ccnotes-* build pipeline skills (source of truth, in git)
-.agents/skills/          generated mirror of the above for Antigravity (git-ignored)
+.agents/skills/          generated mirror for Codex, Gemini CLI, Antigravity (git-ignored)
 content/                  built notebooks (git-ignored — your notes)
 inbox/                    your source slide decks (git-ignored)
 ```

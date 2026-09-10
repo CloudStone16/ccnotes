@@ -13,7 +13,7 @@ description: Permanently delete a ccnotes notebook and everything tied to it —
    - `.claude/skills/ccnotes-doubt-<id>/` and `.agents/skills/ccnotes-doubt-<id>/`
    - the `content/registry.json` entry
 3. On a clear yes: `node tools/delete-notebook.mjs <id> --yes`.
-4. Tell the user to refresh / restart the server so the catalog updates. Confirm the skill
-   folders are gone (`ls .claude/skills .agents/skills | grep <id>` -> nothing).
+4. Tell the user to refresh / restart the server so the catalog updates. Re-list
+   `.claude/skills/` and `.agents/skills/` and verify that neither contains the id.
 
 Never delete without step 2. If the user names a unit ambiguously, list matches and ask.
