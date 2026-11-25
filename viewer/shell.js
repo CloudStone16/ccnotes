@@ -22,8 +22,20 @@
     var link = tree.querySelector('a[data-url="' + CSS.escape(url) + '"]');
     if (link) { link.classList.add("active"); ensureVisible(link); }
     curNav = flatNav.findIndex(function (n) { return n.url === url; });
-    document.getElementById("app").classList.remove("nav-open");
+    setNav(false);
+    var t = link ? link.textContent : "ccnotes";
+    var tt = document.getElementById("topTitle"); if (tt) tt.textContent = t;
   }
+  /* narrow screens: sidebar is a drawer */
+  var appEl = document.getElementById("app");
+  function setNav(on) {
+    appEl.classList.toggle("nav-open", !!on);
+    var b = document.getElementById("navBtn");
+    if (b) { b.setAttribute("aria-expanded", on ? "true" : "false"); b.setAttribute("aria-label", on ? "Close menu" : "Open menu"); }
+  }
+  document.getElementById("navBtn").addEventListener("click", function () { setNav(!appEl.classList.contains("nav-open")); });
+  document.getElementById("scrim").addEventListener("click", function () { setNav(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setNav(false); });
   function ensureVisible(node) {
     var p = node.closest(".unit"); if (p && p.classList.contains("collapsed")) p.classList.remove("collapsed");
     var s = node.closest(".subj"); if (s && s.classList.contains("collapsed")) s.classList.remove("collapsed");
@@ -155,6 +167,7 @@
     CATALOG = data; INDEX = data.searchIndex || []; buildTree();
     var hash = decodeURIComponent(location.hash.slice(1));
     if (hash) open(hash, false);
+    else if (window.matchMedia("(max-width:820px)").matches) setNav(true);   // phone: start with the menu open
   }).catch(function (e) {
     tree.innerHTML = '<p style="padding:16px;color:var(--bad)">Failed to load catalog: ' + e.message + "</p>";
   });

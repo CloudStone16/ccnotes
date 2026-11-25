@@ -43,4 +43,22 @@ html,body{height:100%}
 #welcome p{color:var(--ink-dim)}
 #welcome .muted{color:var(--ink-faint);font-size:14px;line-height:1.8}
 kbd{background:var(--bg-raise);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;font-family:var(--mono);font-size:12px}
-@media (max-width:820px){#app{grid-template-columns:1fr}#sidebar{position:fixed;inset:0 40% 0 0;z-index:50;transform:translateX(-100%);transition:transform .2s}#app.nav-open #sidebar{transform:none}}
+/* phone / narrow: sidebar becomes an off-canvas drawer opened by the top-bar menu button */
+#topbar,#scrim{display:none}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr;height:100vh;height:100dvh}
+  #sidebar{position:fixed;inset:0 15% 0 0;z-index:50;transform:translateX(-100%);transition:transform .2s;
+    box-shadow:none;visibility:hidden}
+  #app.nav-open #sidebar{transform:none;visibility:visible;box-shadow:0 0 40px rgba(0,0,0,.6)}
+  #scrim{display:block;position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s}
+  #app.nav-open #scrim{opacity:1;pointer-events:auto}
+  #main{flex-direction:column;height:100%}
+  #topbar{display:flex;align-items:center;gap:12px;flex:0 0 auto;height:48px;padding:0 12px;
+    background:var(--bg-sink);border-bottom:1px solid var(--line)}
+  #navBtn{width:36px;height:36px;font-size:18px}
+  #topTitle{font-weight:600;font-size:14px;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #viewer{flex:1 1 auto;min-height:0;height:auto}
+  #welcome{padding:24px 20px}
+  .unit .kids a,.unit>.unit-h,.subj>.subj-h{padding-top:9px;padding-bottom:9px}  /* bigger touch targets */
+  #search{font-size:16px}  /* stops iOS zooming into the field */
+}
