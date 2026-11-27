@@ -23,11 +23,16 @@
       <span id="stat"></span>
     </div>
   </aside>
+  <div id="scrim" aria-hidden="true"></div>
   <main id="main">
+    <header id="topbar">
+      <button id="navBtn" class="icon-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
+      <span id="topTitle">ccnotes</span>
+    </header>
     <div id="welcome">
       <h1>ccnotes</h1>
       <p>Interactive study notes, built by your coding agent from your slide decks.</p>
-      <p class="muted">Pick a subject on the left, or press <kbd>/</kbd> to search.
+      <p class="muted">Pick a subject from the menu, or press <kbd>/</kbd> to search.
          Add a unit with <code>node tools/new-notebook.mjs "&lt;Subject&gt;" &lt;unit&gt; "&lt;Title&gt;"</code>
          then run the <code>ccnotes-build</code> skill on its decks.</p>
       <div id="emptyState" hidden><p class="muted">No notebooks yet.</p></div>
